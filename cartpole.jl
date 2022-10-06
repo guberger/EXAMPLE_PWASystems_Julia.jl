@@ -5,20 +5,36 @@ using DifferentialEquations
 Random.seed!(0)
 
 function cartpole!(dx, x, params, ::Any)
-    g, mp, mc, l, d, k1, k2, K1, K2, K3, K4, L1, L2 = params
-    y = x[1] - l*x[2]
-    λ1 = max(k1*(+y - d), 0.0)
-    λ2 = max(k2*(-y - d), 0.0)
+    (
+        s10, s11, s12, s20, s21, s22,
+        a32, a42, b3, b4, d41, d42,
+        K1, K2, K3, K4, L1, L2
+    ) = params
+    λ1 = max(s10 + s11*x[1] + s12*x[2], 0.0)
+    λ2 = max(s20 + s21*x[1] + s22*x[2], 0.0)
     u = K1*x[1] + K2*x[2] + K3*x[3] + K4*x[4] + L1*λ1 + L2*λ2
     dx[1] = x[3]
     dx[2] = x[4]
-    dx[3] = (g*mp/mc)*x[2] + (1/mc)*u
-    dx[4] = (g*(mp + mc)/(l*mc))*x[2] + (1/(l*mc))*u + (1/(l*mp))*(λ1 - λ2)
+    dx[3] = a32*x[2] + b3*u
+    dx[4] = a42*x[2] + b4*u + d41*λ1 + d42*λ2
 end
 
-g, mp, mc, l, d, k1, k2 = (
-    9.81, 0.1, 1, 0.5, 0.1, 10, 10
-)
+g, mp, mc, l, d, k1, k2 = (9.81, 0.1, 1, 0.5, 0.1, 10, 10)
+
+a32 = g*mp/mc
+a42 = g*(mp + mc)/(l*mc)
+b3 = 1/mc
+b4 = 1/(l*mc)
+d41 = +1/(l*mp)
+d42 = -1/(l*mp)
+
+s10 = -k1*d
+s11 = +k1
+s12 = -k1*l
+s20 = -k2*d
+s21 = -k2
+s22 = +k2*l
+
 K1, K2, K3, K4 = (
     1.600433659949915,
     -39.029745978214010,
@@ -29,7 +45,12 @@ L1, L2 = (
     -12.909522105700301,
     12.913673613969927
 )
-params = (g, mp, mc, l, d, k1, k2, K1, K2, K3, K4, L1, L2)
+
+params = (
+    s10, s11, s12, s20, s21, s22,
+    a32, a42, b3, b4, d41, d42,
+    K1, K2, K3, K4, L1, L2
+)
 
 tspan = (0.0, 5.0)
 dt = 0.05

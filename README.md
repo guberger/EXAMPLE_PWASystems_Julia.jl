@@ -1,1 +1,3 @@
 Cartpole with soft walls: Example IV.A in [this paper](https://arxiv.org/abs/1909.11221) using the controller computed in the paper (code [here](https://github.com/AlpAydinoglu/cdesign/tree/master/ICRA2020/controller_design/cartpole))
+
+Acrobot with soft joints: Example IV.C in [this paper](https://arxiv.org/abs/1909.11221) using the controller computed in the paper (code [here](https://github.com/AlpAydinoglu/cdesign/tree/master/ICRA2020/controller_design/acrobot))
