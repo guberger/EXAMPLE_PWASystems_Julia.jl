@@ -2,7 +2,7 @@ using Random
 using PyPlot
 using DifferentialEquations
 
-Random.seed!(0)
+Random.seed!(1)
 
 function acrobot!(dx, x, params, ::Any)
     (
@@ -62,12 +62,11 @@ params = (
     K1, K2, K3, K4, L1, L2
 )
 
-display(params)
-
 tspan = (0.0, 3.0)
 dt = 0.03
 tdom = tspan[1]:dt:tspan[2]
 sols = Vector{Vector{Float64}}[]
+contacts = Vector{Vector{Float64}}[]
 
 for i in 1:10
     x_init = [
@@ -78,15 +77,24 @@ for i in 1:10
     ]
     prob = ODEProblem(acrobot!, x_init, tspan, params)
     sol = solve(prob, saveat=tdom)
+    λ1 = (s10 .+ s11*sol[1, :]) .> eps()
+    λ2 = (s20 .+ s21*sol[1, :]) .> eps()
     push!(sols, sol[:])
+    push!(contacts, map(collect, zip(λ1, λ2)))
 end
 
-fig = figure(figsize=(10, 7))
-ax_ = fig.subplots(2, 2)
+fig = figure(figsize=(14, 7))
+ax_ = fig.subplots(2, 3)
 for i = 1:4
     ax_[i].set_title(string("x[", i, "]"))
     for sol in sols
         ax_[i].plot(tdom, getindex.(sol, i), marker=".")
+    end
+end
+for i = 1:2
+    ax_[4 + i].set_title(string("λ", i))
+    for contact in contacts
+        ax_[4 + i].plot(tdom, getindex.(contact, i), marker=".")
     end
 end
 
@@ -94,9 +102,13 @@ ax_[1].plot(tspan, (-s10/s11, -s10/s11), c="k")
 ax_[1].plot(tspan, (-s20/s21, -s20/s21), c="k")
 
 IO = open("data/acrobot/sols.txt", "w")
-
 for sol in sols
     println(IO, sol)
 end
+close(IO)
 
+IO = open("data/acrobot/contacts.txt", "w")
+for contact in contacts
+    println(IO, contact)
+end
 close(IO)
