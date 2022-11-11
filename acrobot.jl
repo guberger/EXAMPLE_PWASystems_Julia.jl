@@ -26,14 +26,14 @@ a32 = -(g*m2)/(l1*m1)
 a41 = -g/l1
 a42 = (g*(l1*m1 + l1*m2 + l2*m2))/(l1*l2*m1)
 
-b3 = -(l1 + l2)/(l2*m1*l1^2)
-b4 = ((m1*l1^2) + m2*(l1 + l2)^2)/((l1^2)*(l2^2)*m1*m2)
-
 a = m1*(l1^2) + m2*(l1^2)
 b = m2*(l2^2)
 c = m2*l1*l2
 Ma = [(a + b + 2*c) (b + c); (b + c) b]
 iMa = inv(Ma)
+
+b3 = iMa[1, 2]
+b4 = iMa[2, 2]
 
 d31 = -iMa[1, 1]
 d32 = +iMa[1, 1]
@@ -77,10 +77,10 @@ for i in 1:10
     ]
     prob = ODEProblem(acrobot!, x_init, tspan, params)
     sol = solve(prob, saveat=tdom)
-    λ1 = (s10 .+ s11*sol[1, :]) .> eps()
-    λ2 = (s20 .+ s21*sol[1, :]) .> eps()
+    bλ1 = (s10 .+ s11*sol[1, :]) .> eps()
+    bλ2 = (s20 .+ s21*sol[1, :]) .> eps()
     push!(sols, sol[:])
-    push!(contacts, map(collect, zip(λ1, λ2)))
+    push!(contacts, map(collect, zip(bλ1, bλ2)))
 end
 
 fig = figure(figsize=(14, 7))
