@@ -101,14 +101,14 @@ end
 ax_[1].plot(tspan, (-s10/s11, -s10/s11), c="k")
 ax_[1].plot(tspan, (-s20/s21, -s20/s21), c="k")
 
-IO = open("data/acrobot/sols.txt", "w")
+file = open("data/acrobot/sols.txt", "w")
 for sol in sols
-    println(IO, sol)
+    println(file, sol)
 end
-close(IO)
+close(file)
 
-IO = open("data/acrobot/contacts.txt", "w")
+file = open("data/acrobot/contacts.txt", "w")
 for contact in contacts
-    println(IO, contact)
+    println(file, contact)
 end
-close(IO)
+close(file)

@@ -100,7 +100,7 @@ for sol in sols
     end
 end
 
-IO = open("data/double_pendulum/data.txt", "w")
+file = open("data/double_pendulum/data.txt", "w")
 for sol in sols
     for x in sol
         λ1 = max(s10 + s11*x[1], 0.0)
@@ -109,7 +109,7 @@ for sol in sols
         λ4 = max(s40 + s42*x[2], 0.0)
         dx3 = a31*x[1] + a32*x[2] + b3u*(λ2 - λ1) + b3v*(λ4 - λ3)
         dx4 = a41*x[1] + a42*x[2] + b4u*(λ2 - λ1) + b4v*(λ4 - λ3)
-        println(IO, ((x[1], x[2]), (dx3, dx4)))
+        println(file, ((x[1], x[2]), (dx3, dx4)))
     end
 end
-close(IO)
+close(file)

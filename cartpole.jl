@@ -62,8 +62,8 @@ for i in 1:10
     x_init = [
         rand()/5 - 0.1,
         0.0,
-        rand()*2 - 1.0,
-        rand()*2 - 1.0
+        rand()*3 - 1.0,
+        rand()*3 - 1.0
     ]
     prob = ODEProblem(cartpole!, x_init, tspan, params)
     sol = solve(prob, saveat=tdom)
@@ -88,14 +88,25 @@ for i = 1:2
     end
 end
 
-IO = open("data/cartpole/sols.txt", "w")
+file = open("data/cartpole/sols.txt", "w")
 for sol in sols
-    println(IO, sol)
+    println(file, sol)
 end
-close(IO)
+close(file)
 
-IO = open("data/cartpole/contacts.txt", "w")
+file = open("data/cartpole/contacts.txt", "w")
 for contact in contacts
-    println(IO, contact)
+    println(file, contact)
 end
-close(IO)
+close(file)
+
+file = open("data/cartpole/data.txt", "w")
+for sol in sols
+    for x in sol
+        λ1 = max(s10 + s11*x[1] + s12*x[2], 0.0)
+        λ2 = max(s20 + s21*x[1] + s22*x[2], 0.0)
+        dx4 = a42*x[2] + d41*λ1 + d42*λ2
+        println(file, ((x[1], x[2]), (dx4,)))
+    end
+end
+close(file)
